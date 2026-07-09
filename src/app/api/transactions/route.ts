@@ -11,15 +11,23 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const body = await req.json().catch(() => ({}));
-  const { error } = createTransaction(
-    String(body.departmentId ?? ""),
-    body.type,
-    Number(body.amount),
-    typeof body.memo === "string" ? body.memo : undefined
-  );
-  if (error) {
-    return NextResponse.json({ error }, { status: 400 });
+  try {
+    const body = await req.json().catch(() => ({}));
+    const { error } = await createTransaction(
+      String(body.departmentId ?? ""),
+      body.type,
+      Number(body.amount),
+      typeof body.memo === "string" ? body.memo : undefined
+    );
+    if (error) {
+      return NextResponse.json({ error }, { status: 400 });
+    }
+    return NextResponse.json({ state: await getState() });
+  } catch (err) {
+    console.error("POST /api/transactions failed:", err);
+    return NextResponse.json(
+      { error: "요청을 처리하지 못했습니다." },
+      { status: 500 }
+    );
   }
-  return NextResponse.json({ state: getState() });
 }

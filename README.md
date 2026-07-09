@@ -10,7 +10,7 @@
 - **Lucide** 아이콘
 - **next-themes** 기반 다크모드 (라이트 / 다크 / 시스템)
 - 반응형 디자인 (모바일 ~ 데스크톱)
-- **SQLite** (better-sqlite3) 서버 저장소 + API 라우트
+- **Supabase** (Postgres) 저장소 + Next.js API 라우트
 
 ## 주요 기능
 
@@ -21,9 +21,11 @@
 | 관리자 | `/admin` | 관리자 로그인 후 쿠폰 추가·사용 처리 |
 
 - 쿠폰 추가/사용은 **관리자만** 가능합니다 (httpOnly 쿠키 세션, 12시간 유지).
-- 보유 수량보다 많이 사용하려 하면 서버에서 차단됩니다.
-- 데이터는 서버의 SQLite 데이터베이스(`data/rodem.db`)에 저장되어
-  **모든 기기에서 공유**됩니다. 화면은 포커스 복귀 시와 30초마다 자동 갱신됩니다.
+- 보유 수량보다 많이 사용하려 하면 서버(Postgres 함수)에서 원자적으로 차단됩니다.
+- 데이터는 **Supabase(Postgres)** 에 저장되어 **모든 기기에서 공유**됩니다.
+  화면은 포커스 복귀 시와 30초마다 자동 갱신됩니다.
+- Supabase 접근은 서버 API 라우트에서 서비스 롤 키로만 이루어지며,
+  브라우저에는 Supabase 키가 노출되지 않습니다.
 
 ### API
 
@@ -37,6 +39,32 @@
 
 ## 시작하기
 
+### 1. Supabase 프로젝트 준비
+
+1. [supabase.com](https://supabase.com)에서 새 프로젝트를 만듭니다.
+2. 대시보드 → **SQL Editor**에 `supabase/migrations/20260709000000_init.sql`
+   내용을 붙여넣고 실행합니다. (supabase CLI 사용 시 `supabase db push`)
+3. 대시보드 → **Project Settings → API**에서 `Project URL`과
+   `service_role` 키를 확인합니다.
+
+### 2. 환경 변수 설정
+
+`.env.example`을 복사해 `.env.local`을 만들고 값을 채웁니다.
+
+```bash
+cp .env.example .env.local
+```
+
+| 환경 변수 | 기본값 | 설명 |
+| --- | --- | --- |
+| `SUPABASE_URL` | (필수) | Supabase 프로젝트 URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | (필수) | 서비스 롤 키 — **서버 전용, 절대 공개 금지** |
+| `ADMIN_ID` | `admin` | 관리자 아이디 |
+| `ADMIN_PASSWORD` | `rodem1234` | 관리자 비밀번호 |
+| `AUTH_SECRET` | (개발용 기본값) | 세션 쿠키 서명 키 — **운영 시 반드시 설정** (`openssl rand -hex 32`) |
+
+### 3. 실행
+
 ```bash
 npm install
 npm run dev
@@ -44,26 +72,8 @@ npm run dev
 
 [http://localhost:3000](http://localhost:3000) 에서 확인할 수 있습니다.
 
-### 관리자 계정
-
-기본 계정은 `admin` / `rodem1234` 이며, 환경 변수로 변경할 수 있습니다.
-
-| 환경 변수 | 기본값 | 설명 |
-| --- | --- | --- |
-| `ADMIN_ID` | `admin` | 관리자 아이디 |
-| `ADMIN_PASSWORD` | `rodem1234` | 관리자 비밀번호 |
-| `AUTH_SECRET` | (개발용 기본값) | 세션 쿠키 서명 키 — **운영 시 반드시 설정** |
-| `DATABASE_PATH` | `./data/rodem.db` | SQLite 파일 경로 |
-
-```bash
-# 예: 운영 실행
-ADMIN_PASSWORD=새비밀번호 AUTH_SECRET=$(openssl rand -hex 32) npm start
-```
-
-> ⚠️ 배포 참고: SQLite는 파일 기반이므로 **파일 시스템이 유지되는 서버**
-> (일반 VPS, Docker 볼륨, Railway/Fly.io 볼륨 등)에 배포해야 합니다.
-> Vercel 같은 서버리스 환경에서는 파일이 유지되지 않으므로
-> Turso, Supabase 등 외부 DB로 교체가 필요합니다.
+> Supabase가 외부 DB이므로 Vercel 등 서버리스 환경에도 그대로 배포할 수
+> 있습니다. 배포 플랫폼의 환경 변수 설정에 위 값들을 등록하세요.
 
 ## 부서 설정
 
