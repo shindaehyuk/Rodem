@@ -10,6 +10,7 @@
 - **Lucide** 아이콘
 - **next-themes** 기반 다크모드 (라이트 / 다크 / 시스템)
 - 반응형 디자인 (모바일 ~ 데스크톱)
+- **SQLite** (better-sqlite3) 서버 저장소 + API 라우트
 
 ## 주요 기능
 
@@ -19,9 +20,20 @@
 | 내역 | `/history` | 쿠폰 추가·사용 전체 내역 (구분/부서별 필터) |
 | 관리자 | `/admin` | 관리자 로그인 후 쿠폰 추가·사용 처리 |
 
-- 쿠폰 추가/사용은 **관리자만** 가능합니다 (로그인 세션 12시간 유지).
-- 보유 수량보다 많이 사용하려 하면 차단됩니다.
-- 데이터는 브라우저 `localStorage`에 저장됩니다.
+- 쿠폰 추가/사용은 **관리자만** 가능합니다 (httpOnly 쿠키 세션, 12시간 유지).
+- 보유 수량보다 많이 사용하려 하면 서버에서 차단됩니다.
+- 데이터는 서버의 SQLite 데이터베이스(`data/rodem.db`)에 저장되어
+  **모든 기기에서 공유**됩니다. 화면은 포커스 복귀 시와 30초마다 자동 갱신됩니다.
+
+### API
+
+| 메서드 | 경로 | 설명 |
+| --- | --- | --- |
+| `GET` | `/api/state` | 부서별 잔액 + 최근 내역 조회 |
+| `POST` | `/api/transactions` | 쿠폰 추가/사용 (관리자 전용) |
+| `POST` | `/api/auth/login` | 관리자 로그인 (httpOnly 세션 쿠키 발급) |
+| `POST` | `/api/auth/logout` | 로그아웃 |
+| `GET` | `/api/auth/session` | 현재 세션 확인 |
 
 ## 시작하기
 
@@ -32,17 +44,26 @@ npm run dev
 
 [http://localhost:3000](http://localhost:3000) 에서 확인할 수 있습니다.
 
-### 관리자 계정 (데모)
+### 관리자 계정
 
-| 아이디 | 비밀번호 |
-| --- | --- |
-| `admin` | `rodem1234` |
+기본 계정은 `admin` / `rodem1234` 이며, 환경 변수로 변경할 수 있습니다.
 
-계정 정보는 `src/lib/store.tsx`의 `ADMIN_ID` / `ADMIN_PASSWORD` 상수에서 변경할 수 있습니다.
+| 환경 변수 | 기본값 | 설명 |
+| --- | --- | --- |
+| `ADMIN_ID` | `admin` | 관리자 아이디 |
+| `ADMIN_PASSWORD` | `rodem1234` | 관리자 비밀번호 |
+| `AUTH_SECRET` | (개발용 기본값) | 세션 쿠키 서명 키 — **운영 시 반드시 설정** |
+| `DATABASE_PATH` | `./data/rodem.db` | SQLite 파일 경로 |
 
-> ⚠️ 현재 인증과 데이터 저장은 클라이언트(localStorage) 기반의 데모 구현입니다.
-> 여러 기기에서 데이터를 공유하거나 실제 보안이 필요하다면 서버 측 인증(NextAuth, Supabase 등)과
-> 데이터베이스 연동으로 교체해야 합니다.
+```bash
+# 예: 운영 실행
+ADMIN_PASSWORD=새비밀번호 AUTH_SECRET=$(openssl rand -hex 32) npm start
+```
+
+> ⚠️ 배포 참고: SQLite는 파일 기반이므로 **파일 시스템이 유지되는 서버**
+> (일반 VPS, Docker 볼륨, Railway/Fly.io 볼륨 등)에 배포해야 합니다.
+> Vercel 같은 서버리스 환경에서는 파일이 유지되지 않으므로
+> Turso, Supabase 등 외부 DB로 교체가 필요합니다.
 
 ## 부서 설정
 

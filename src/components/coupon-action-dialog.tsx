@@ -41,6 +41,7 @@ export function CouponActionDialog({
   const [amount, setAmount] = React.useState("1");
   const [memo, setMemo] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
+  const [submitting, setSubmitting] = React.useState(false);
 
   const isAdd = type === "add";
   const title = isAdd ? "쿠폰 추가" : "쿠폰 사용";
@@ -55,21 +56,26 @@ export function CouponActionDialog({
     }
   }, [open, departmentId]);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!dept) {
       setError("부서를 선택해 주세요.");
       return;
     }
     const parsed = Number(amount);
-    const result = isAdd
-      ? addCoupons(dept, parsed, memo)
-      : useCoupons(dept, parsed, memo);
-    if (result) {
-      setError(result);
-      return;
+    setSubmitting(true);
+    try {
+      const result = isAdd
+        ? await addCoupons(dept, parsed, memo)
+        : await useCoupons(dept, parsed, memo);
+      if (result) {
+        setError(result);
+        return;
+      }
+      setOpen(false);
+    } finally {
+      setSubmitting(false);
     }
-    setOpen(false);
   }
 
   return (
@@ -164,8 +170,12 @@ export function CouponActionDialog({
             >
               취소
             </Button>
-            <Button type="submit" variant={isAdd ? "default" : "secondary"}>
-              {title}
+            <Button
+              type="submit"
+              variant={isAdd ? "default" : "secondary"}
+              disabled={submitting}
+            >
+              {submitting ? "처리 중…" : title}
             </Button>
           </DialogFooter>
         </form>
