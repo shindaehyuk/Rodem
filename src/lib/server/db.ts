@@ -19,6 +19,16 @@ function getClient(): SupabaseClient {
         "SUPABASE_URL 과 SUPABASE_SERVICE_ROLE_KEY 환경 변수를 설정해 주세요."
       );
     }
+    // publishable(공개) 키나 anon 키로는 서버 저장소에 접근할 수 없다.
+    // 대시보드 → Project Settings → API Keys 의 secret 키(sb_secret_...)
+    // 또는 기존 service_role JWT(eyJ...)가 필요하다.
+    const isSecretKey = key.startsWith("sb_secret_") || key.startsWith("eyJ");
+    if (!isSecretKey) {
+      throw new Error(
+        "SUPABASE_SERVICE_ROLE_KEY 에 secret 키가 아닌 값이 설정되어 있습니다. " +
+          "sb_secret_... 형식의 secret 키(또는 service_role 키)를 사용해 주세요."
+      );
+    }
     client = createClient(url, key, {
       auth: { persistSession: false, autoRefreshToken: false },
     });

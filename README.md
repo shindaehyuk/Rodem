@@ -58,7 +58,7 @@ cp .env.example .env.local
 | 환경 변수 | 기본값 | 설명 |
 | --- | --- | --- |
 | `SUPABASE_URL` | (필수) | Supabase 프로젝트 URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | (필수) | 서비스 롤 키 — **서버 전용, 절대 공개 금지** |
+| `SUPABASE_SERVICE_ROLE_KEY` | (필수) | **secret 키** (`sb_secret_...` 또는 기존 `service_role` JWT) — 서버 전용, 절대 공개 금지. `sb_publishable_...` 공개 키는 사용할 수 없습니다. |
 | `ADMIN_ID` | `admin` | 관리자 아이디 |
 | `ADMIN_PASSWORD` | `rodem1234` | 관리자 비밀번호 |
 | `AUTH_SECRET` | (개발용 기본값) | 세션 쿠키 서명 키 — **운영 시 반드시 설정** (`openssl rand -hex 32`) |
