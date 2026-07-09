@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Stripe-inspired fintech palette (light) */
+  --background: #f6f9fc;
+  --foreground: #0a2540;
+  --card: #ffffff;
+  --card-foreground: #0a2540;
+  --popover: #ffffff;
+  --popover-foreground: #0a2540;
+  --primary: #635bff;
+  --primary-foreground: #ffffff;
+  --secondary: #eef2f7;
+  --secondary-foreground: #0a2540;
+  --muted: #eef2f7;
+  --muted-foreground: #425466;
+  --accent: #f0efff;
+  --accent-foreground: #4f46e5;
+  --destructive: #df1b41;
+  --destructive-foreground: #ffffff;
+  --border: #e3e8ee;
+  --input: #e3e8ee;
+  --ring: #635bff;
+  --success: #228403;
+  --radius: 0.625rem;
+}
+
+.dark {
+  /* Stripe-inspired fintech palette (dark) */
+  --background: #0b0f19;
+  --foreground: #f6f9fc;
+  --card: #111827;
+  --card-foreground: #f6f9fc;
+  --popover: #111827;
+  --popover-foreground: #f6f9fc;
+  --primary: #7a73ff;
+  --primary-foreground: #ffffff;
+  --secondary: #1c2536;
+  --secondary-foreground: #f6f9fc;
+  --muted: #1c2536;
+  --muted-foreground: #8898aa;
+  --accent: #1e1b4b;
+  --accent-foreground: #c7d2fe;
+  --destructive: #ff5c7c;
+  --destructive-foreground: #ffffff;
+  --border: #232d40;
+  --input: #232d40;
+  --ring: #7a73ff;
+  --success: #3fb950;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI",
+    Roboto, "Helvetica Neue", "Apple SD Gothic Neo", "Noto Sans KR",
+    "Malgun Gothic", sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "tnum";
+  }
+}
+
+/* Stripe-style gradient accents */
+.stripe-gradient {
+  background: linear-gradient(100deg, #635bff 0%, #8b5cf6 40%, #06b6d4 100%);
+}
+.stripe-gradient-text {
+  background: linear-gradient(100deg, #635bff 0%, #8b5cf6 50%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
