@@ -63,10 +63,11 @@ cp .env.example .env.local
 | `ADMIN_PASSWORD` | `rodem1234` | 관리자 비밀번호 |
 | `AUTH_SECRET` | (개발용 기본값) | 세션 쿠키 서명 키 — **운영 시 반드시 설정** (`openssl rand -hex 32`) |
 
-### 3. 실행
+### 3. 설정 점검 및 실행
 
 ```bash
 npm install
+npm run check:supabase   # 접속 정보와 마이그레이션 적용 여부 확인 (데이터 변경 없음)
 npm run dev
 ```
 
