@@ -18,9 +18,12 @@ import {
 export function TransactionList({
   transactions,
   emptyMessage = "아직 내역이 없습니다.",
+  showDepartment = true,
 }: {
   transactions: CouponTransaction[];
   emptyMessage?: string;
+  /** 부서 상세처럼 부서가 자명한 화면에서는 부서 열을 숨긴다. */
+  showDepartment?: boolean;
 }) {
   if (transactions.length === 0) {
     return (
@@ -35,8 +38,10 @@ export function TransactionList({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="pl-4">부서</TableHead>
-          <TableHead>구분</TableHead>
+          {showDepartment && <TableHead className="pl-4">부서</TableHead>}
+          <TableHead className={showDepartment ? undefined : "pl-4"}>
+            구분
+          </TableHead>
           <TableHead className="text-right">수량</TableHead>
           <TableHead className="hidden sm:table-cell">메모</TableHead>
           <TableHead className="pr-4 text-right">일시</TableHead>
@@ -47,16 +52,18 @@ export function TransactionList({
           const dept = DEPARTMENT_MAP[tx.departmentId];
           return (
             <TableRow key={tx.id}>
-              <TableCell className="pl-4 font-medium">
-                <span className="inline-flex items-center gap-2">
-                  <span
-                    className="size-2 shrink-0 rounded-full"
-                    style={{ backgroundColor: dept?.color ?? "#8898aa" }}
-                  />
-                  {getDepartmentName(tx.departmentId)}
-                </span>
-              </TableCell>
-              <TableCell>
+              {showDepartment && (
+                <TableCell className="pl-4 font-medium">
+                  <span className="inline-flex items-center gap-2">
+                    <span
+                      className="size-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: dept?.color ?? "#8898aa" }}
+                    />
+                    {getDepartmentName(tx.departmentId)}
+                  </span>
+                </TableCell>
+              )}
+              <TableCell className={showDepartment ? undefined : "pl-4"}>
                 {tx.type === "add" ? (
                   <Badge variant="success">
                     <ArrowUpRightIcon /> 추가
