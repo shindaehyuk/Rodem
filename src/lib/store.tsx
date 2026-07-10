@@ -26,7 +26,7 @@ interface CouponContextValue {
     amount: number,
     memo?: string
   ) => Promise<string | null>;
-  useCoupons: (
+  spendCoupons: (
     departmentId: string,
     amount: number,
     memo?: string
@@ -57,7 +57,11 @@ export function CouponProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   React.useEffect(() => {
-    refresh().finally(() => setReady(true));
+    let active = true;
+    void (async () => {
+      await refresh();
+      if (active) setReady(true);
+    })();
 
     const onFocus = () => {
       if (document.visibilityState === "visible") refresh();
@@ -66,6 +70,7 @@ export function CouponProvider({ children }: { children: React.ReactNode }) {
     document.addEventListener("visibilitychange", onFocus);
     const interval = window.setInterval(onFocus, REFRESH_INTERVAL);
     return () => {
+      active = false;
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onFocus);
       window.clearInterval(interval);
@@ -136,15 +141,15 @@ export function CouponProvider({ children }: { children: React.ReactNode }) {
     [applyTransaction]
   );
 
-  const useCoupons = React.useCallback(
+  const spendCoupons = React.useCallback(
     (departmentId: string, amount: number, memo?: string) =>
       applyTransaction(departmentId, "use", amount, memo),
     [applyTransaction]
   );
 
   const value = React.useMemo(
-    () => ({ ready, state, isAdmin, login, logout, addCoupons, useCoupons }),
-    [ready, state, isAdmin, login, logout, addCoupons, useCoupons]
+    () => ({ ready, state, isAdmin, login, logout, addCoupons, spendCoupons }),
+    [ready, state, isAdmin, login, logout, addCoupons, spendCoupons]
   );
 
   return (

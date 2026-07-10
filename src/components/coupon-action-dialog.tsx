@@ -35,7 +35,7 @@ export function CouponActionDialog({
   departmentId?: string;
   trigger: React.ReactNode;
 }) {
-  const { state, addCoupons, useCoupons } = useCouponStore();
+  const { state, addCoupons, spendCoupons } = useCouponStore();
   const [open, setOpen] = React.useState(false);
   const [dept, setDept] = React.useState(departmentId ?? "");
   const [amount, setAmount] = React.useState("1");
@@ -47,14 +47,17 @@ export function CouponActionDialog({
   const title = isAdd ? "쿠폰 추가" : "쿠폰 사용";
   const balance = dept ? (state.balances[dept] ?? 0) : null;
 
-  React.useEffect(() => {
-    if (open) {
+  function handleOpenChange(next: boolean) {
+    setOpen(next);
+    if (next) {
+      // 다이얼로그를 열 때마다 폼을 초기화한다.
       setDept(departmentId ?? "");
       setAmount("1");
       setMemo("");
       setError(null);
+      setSubmitting(false);
     }
-  }, [open, departmentId]);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -67,7 +70,7 @@ export function CouponActionDialog({
     try {
       const result = isAdd
         ? await addCoupons(dept, parsed, memo)
-        : await useCoupons(dept, parsed, memo);
+        : await spendCoupons(dept, parsed, memo);
       if (result) {
         setError(result);
         return;
@@ -79,7 +82,7 @@ export function CouponActionDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
