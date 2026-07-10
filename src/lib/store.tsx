@@ -43,18 +43,24 @@ export function CouponProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = React.useState(false);
 
   const refresh = React.useCallback(async () => {
+    // 한쪽이 실패해도(예: 오프라인에서 세션 확인 실패) 다른 쪽은 반영한다.
+    const [stateRes, sessionRes] = await Promise.allSettled([
+      fetch("/api/state", { cache: "no-store" }),
+      fetch("/api/auth/session", { cache: "no-store" }),
+    ]);
     try {
-      const [stateRes, sessionRes] = await Promise.all([
-        fetch("/api/state", { cache: "no-store" }),
-        fetch("/api/auth/session", { cache: "no-store" }),
-      ]);
-      if (stateRes.ok) setState(await stateRes.json());
-      if (sessionRes.ok) {
-        const session = (await sessionRes.json()) as { isAdmin: boolean };
+      if (stateRes.status === "fulfilled" && stateRes.value.ok)
+        setState(await stateRes.value.json());
+    } catch {
+      // 응답 파싱 실패 시 기존 화면을 유지한다.
+    }
+    try {
+      if (sessionRes.status === "fulfilled" && sessionRes.value.ok) {
+        const session = (await sessionRes.value.json()) as { isAdmin: boolean };
         setIsAdmin(session.isAdmin);
       }
     } catch {
-      // 네트워크 오류 시 기존 화면을 유지한다.
+      // 응답 파싱 실패 시 기존 상태를 유지한다.
     }
   }, []);
 

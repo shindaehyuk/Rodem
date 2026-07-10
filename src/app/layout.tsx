@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CouponProvider } from "@/lib/store";
 import { SiteHeader } from "@/components/site-header";
+import { ServiceWorkerRegister } from "@/components/sw-register";
 
 // iOS 스플래시 이미지 매핑: [CSS width, CSS height, DPR]
 const APPLE_SPLASHES: [number, number, number][] = [
@@ -62,6 +63,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <CouponProvider>
+            <ServiceWorkerRegister />
             <SiteHeader />
             <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
               {children}
