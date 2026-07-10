@@ -35,45 +35,54 @@ export function CouponActionDialog({
   departmentId?: string;
   trigger: React.ReactNode;
 }) {
-  const { state, addCoupons, useCoupons } = useCouponStore();
+  const { state, addCoupons, spendCoupons } = useCouponStore();
   const [open, setOpen] = React.useState(false);
   const [dept, setDept] = React.useState(departmentId ?? "");
   const [amount, setAmount] = React.useState("1");
   const [memo, setMemo] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
+  const [submitting, setSubmitting] = React.useState(false);
 
   const isAdd = type === "add";
   const title = isAdd ? "쿠폰 추가" : "쿠폰 사용";
   const balance = dept ? (state.balances[dept] ?? 0) : null;
 
-  React.useEffect(() => {
-    if (open) {
+  function handleOpenChange(next: boolean) {
+    setOpen(next);
+    if (next) {
+      // 다이얼로그를 열 때마다 폼을 초기화한다.
       setDept(departmentId ?? "");
       setAmount("1");
       setMemo("");
       setError(null);
+      setSubmitting(false);
     }
-  }, [open, departmentId]);
+  }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!dept) {
       setError("부서를 선택해 주세요.");
       return;
     }
     const parsed = Number(amount);
-    const result = isAdd
-      ? addCoupons(dept, parsed, memo)
-      : useCoupons(dept, parsed, memo);
-    if (result) {
-      setError(result);
-      return;
+    setSubmitting(true);
+    try {
+      const result = isAdd
+        ? await addCoupons(dept, parsed, memo)
+        : await spendCoupons(dept, parsed, memo);
+      if (result) {
+        setError(result);
+        return;
+      }
+      setOpen(false);
+    } finally {
+      setSubmitting(false);
     }
-    setOpen(false);
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -164,8 +173,12 @@ export function CouponActionDialog({
             >
               취소
             </Button>
-            <Button type="submit" variant={isAdd ? "default" : "secondary"}>
-              {title}
+            <Button
+              type="submit"
+              variant={isAdd ? "default" : "secondary"}
+              disabled={submitting}
+            >
+              {submitting ? "처리 중…" : title}
             </Button>
           </DialogFooter>
         </form>

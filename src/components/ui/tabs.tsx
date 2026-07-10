@@ -26,7 +26,8 @@ function TabsList({
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
-        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-lg p-[3px]",
+        // 모바일에서는 터치 타깃 확보를 위해 살짝 크게 (h-10), sm 이상에서 h-9
+        "bg-muted text-muted-foreground inline-flex h-10 sm:h-9 w-fit items-center justify-center rounded-lg p-[3px]",
         className
       )}
       {...props}

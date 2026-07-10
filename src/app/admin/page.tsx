@@ -13,13 +13,7 @@ import {
 import { DEPARTMENTS } from "@/lib/departments";
 import { useCouponStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -39,14 +33,20 @@ function LoginForm() {
   const [id, setId] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
+  const [submitting, setSubmitting] = React.useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!login(id, password)) {
-      setError("아이디 또는 비밀번호가 올바르지 않습니다.");
-      return;
+    setSubmitting(true);
+    try {
+      if (!(await login(id, password))) {
+        setError("아이디 또는 비밀번호가 올바르지 않습니다.");
+        return;
+      }
+      setError(null);
+    } finally {
+      setSubmitting(false);
     }
-    setError(null);
   }
 
   return (
@@ -92,8 +92,8 @@ function LoginForm() {
                 {error}
               </p>
             )}
-            <Button type="submit" className="w-full">
-              로그인
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting ? "로그인 중…" : "로그인"}
             </Button>
           </form>
         </CardContent>
@@ -134,7 +134,7 @@ function AdminPanel() {
               </Button>
             }
           />
-          <Button variant="outline" onClick={logout}>
+          <Button variant="outline" onClick={() => logout()}>
             <LogOutIcon /> 로그아웃
           </Button>
         </div>
@@ -216,7 +216,8 @@ function AdminPanel() {
 
       <Separator />
       <p className="text-xs text-muted-foreground">
-        로그인 세션은 12시간 동안 유지되며, 이 브라우저에서만 적용됩니다.
+        로그인 세션은 12시간 동안 유지됩니다. 쿠폰 데이터는 서버에 저장되어 모든
+        기기에서 공유됩니다.
       </p>
     </div>
   );
