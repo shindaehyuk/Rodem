@@ -5,17 +5,17 @@ import type { Department } from "./types";
  * color는 부서 카드의 포인트 컬러로 사용됩니다.
  */
 export const DEPARTMENTS: Department[] = [
-  { id: "dept-01", name: "유아부", color: "#635bff" },
-  { id: "dept-02", name: "유치부", color: "#8b5cf6" },
-  { id: "dept-03", name: "유년부", color: "#06b6d4" },
-  { id: "dept-04", name: "초등부", color: "#0ea5e9" },
-  { id: "dept-05", name: "중등부", color: "#10b981" },
-  { id: "dept-06", name: "고등부", color: "#f59e0b" },
-  { id: "dept-07", name: "청년부", color: "#ef4444" },
-  { id: "dept-08", name: "장년부", color: "#ec4899" },
-  { id: "dept-09", name: "찬양팀", color: "#14b8a6" },
-  { id: "dept-10", name: "교육부", color: "#6366f1" },
-  { id: "dept-11", name: "행정팀", color: "#84cc16" },
+  { id: "dept-01", name: "믿음부", color: "#e02424" },
+  { id: "dept-02", name: "소망부", color: "#f0762b" },
+  { id: "dept-03", name: "사랑부", color: "#f0e13c" },
+  { id: "dept-04", name: "은혜부", color: "#8ed14f" },
+  { id: "dept-05", name: "진리부", color: "#43b649" },
+  { id: "dept-06", name: "충성부", color: "#1f6fc0" },
+  { id: "dept-07", name: "지혜부", color: "#c7a5de" },
+  { id: "dept-08", name: "영광부", color: "#f07f9b" },
+  { id: "dept-09", name: "선행부", color: "#f6c3ce" },
+  { id: "dept-10", name: "겸손부", color: "#cbe6bd" },
+  { id: "dept-11", name: "성결부", color: "#bfe2ee" },
 ];
 
 export const DEPARTMENT_MAP: Record<string, Department> = Object.fromEntries(
