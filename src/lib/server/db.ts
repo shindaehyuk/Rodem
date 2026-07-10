@@ -109,3 +109,25 @@ export async function createTransaction(
   }
   return { error: (data as string | null) ?? null };
 }
+
+export async function updateTransactionMemo(
+  id: string,
+  memo: string
+): Promise<{ error: string | null }> {
+  if (!id) return { error: "잘못된 요청입니다." };
+
+  const trimmed = memo.trim().slice(0, 50);
+  const { data, error } = await getClient()
+    .from("transactions")
+    .update({ memo: trimmed || null })
+    .eq("id", id)
+    .select("id");
+
+  if (error) {
+    console.error("update memo failed:", error.message);
+    return { error: "메모를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요." };
+  }
+  if (!data || data.length === 0)
+    return { error: "존재하지 않는 내역입니다." };
+  return { error: null };
+}

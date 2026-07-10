@@ -31,6 +31,8 @@ interface CouponContextValue {
     amount: number,
     memo?: string
   ) => Promise<string | null>;
+  /** 내역의 메모를 수정한다 (관리자 전용). 성공 시 null, 실패 시 오류 메시지. */
+  updateMemo: (transactionId: string, memo: string) => Promise<string | null>;
 }
 
 const CouponContext = React.createContext<CouponContextValue | null>(null);
@@ -147,9 +149,45 @@ export function CouponProvider({ children }: { children: React.ReactNode }) {
     [applyTransaction]
   );
 
+  const updateMemo = React.useCallback(
+    async (transactionId: string, memo: string): Promise<string | null> => {
+      try {
+        const res = await fetch(
+          `/api/transactions/${encodeURIComponent(transactionId)}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ memo }),
+          }
+        );
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          if (res.status === 401) setIsAdmin(false);
+          return (
+            (data as { error?: string }).error ?? "메모를 저장하지 못했습니다."
+          );
+        }
+        setState((data as { state: CouponState }).state);
+        return null;
+      } catch {
+        return "서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.";
+      }
+    },
+    []
+  );
+
   const value = React.useMemo(
-    () => ({ ready, state, isAdmin, login, logout, addCoupons, spendCoupons }),
-    [ready, state, isAdmin, login, logout, addCoupons, spendCoupons]
+    () => ({
+      ready,
+      state,
+      isAdmin,
+      login,
+      logout,
+      addCoupons,
+      spendCoupons,
+      updateMemo,
+    }),
+    [ready, state, isAdmin, login, logout, addCoupons, spendCoupons, updateMemo]
   );
 
   return (
