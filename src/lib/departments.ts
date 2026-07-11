@@ -1,7 +1,7 @@
 import type { Department } from "./types";
 
 /**
- * 11개 부서 정의. 부서명이 바뀌면 여기만 수정하면 됩니다.
+ * 12개 부서 정의. 부서명이 바뀌면 여기만 수정하면 됩니다.
  * color는 부서 카드의 포인트 컬러로 사용됩니다.
  */
 export const DEPARTMENTS: Department[] = [
@@ -16,6 +16,7 @@ export const DEPARTMENTS: Department[] = [
   { id: "dept-09", name: "선행부", color: "#f6c3ce" },
   { id: "dept-10", name: "겸손부", color: "#cbe6bd" },
   { id: "dept-11", name: "성결부", color: "#bfe2ee" },
+  { id: "dept-12", name: "하나부", color: "#0d9488" },
 ];
 
 export const DEPARTMENT_MAP: Record<string, Department> = Object.fromEntries(
