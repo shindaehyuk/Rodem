@@ -24,7 +24,7 @@ const APPLE_SPLASHES: [number, number, number][] = [
 
 export const metadata: Metadata = {
   title: "로뎀 카페 쿠폰",
-  description: "11개 부서의 카페 쿠폰을 한눈에 확인하고 관리하세요.",
+  description: "12개 부서의 카페 쿠폰을 한눈에 확인하고 관리하세요.",
   manifest: "/manifest.webmanifest",
   // 구형 iOS(<16.4)는 manifest display를 무시하므로 명시적 메타로 보강
   other: { "apple-mobile-web-app-capable": "yes" },
