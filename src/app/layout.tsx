@@ -70,7 +70,7 @@ export default function RootLayout({
             </main>
             <footer className="border-t py-6">
               <p className="text-center text-xs text-muted-foreground">
-                로뎀 카페 쿠폰 관리 시스템 · made by daeng
+                로뎀 카페 쿠폰 관리 시스템
               </p>
             </footer>
           </CouponProvider>
